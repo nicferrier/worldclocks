@@ -32,6 +32,87 @@ const momentInstance = function () {
     };
 };
 
+
+// Circle drawing stuff
+const circle = function (canvas, ctx, radius) {
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = '#92949C';
+    // ctx.fillStyle = '#353535'; // this was used to make the center filled
+    ctx.stroke();
+}
+
+const radiate = function (canvas, ctx, radials, length, lengthDivider) {
+    for (let i = 0; i < 12; i++) {
+        angle = (i - 3) * (Math.PI * 2) / radials;
+        ctx.lineWidth = 1;   // Hand width.
+        ctx.beginPath();
+        const x1 = (canvas.width / 2) + Math.cos(angle) * (length);
+        const y1 = (canvas.height / 2) + Math.sin(angle) * (length);
+        const x2 = (canvas.width / 2) + Math.cos(angle) * (length - (length / lengthDivider));
+        const y2 = (canvas.height / 2) + Math.sin(angle) * (length - (length / lengthDivider));
+        
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        
+        ctx.strokeStyle = '#466B76';
+        ctx.stroke();
+    }
+}
+
+const drawHand = function (canvas, ctx, val, length, lengthDivider, handWidth) {
+    const angle = ((Math.PI * 2) * val) - ((Math.PI * 2) / 4);
+    ctx.lineWidth = handWidth;
+
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+    ctx.lineTo((canvas.width / 2 + Math.cos(angle) * (length / lengthDivider)),
+               canvas.height / 2 + Math.sin(angle) * (length / lengthDivider));
+
+    // The second hand has a counter balance tail
+    if (lengthDivider === 1) {
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
+        ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                   canvas.height / 2 - Math.sin(angle) * 20);
+    }
+    ctx.strokeStyle = '#586A73';
+    ctx.stroke();
+}
+
+const showClock = function () {
+    // DEFINE CANVAS AND ITS CONTEXT.
+    // var canvas = document.getElementById('canvas');
+    const canvas = document.createElement("canvas");
+    document.querySelector(".clockpic").appendChild(canvas);
+    canvas.width = 200;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d');
+
+    const date = new Date;
+    let angle;
+    const secHandLength = 60;
+
+    // CLEAR EVERYTHING ON THE CANVAS. RE-DRAW NEW ELEMENTS EVERY SECOND.
+    ctx.clearRect(0, 0, canvas.width, canvas.height);        
+
+    circle(canvas, ctx, secHandLength + 10); // outer
+    circle(canvas, ctx, secHandLength + 7); // inner
+    circle(canvas, ctx, 2); // center
+
+    radiate(canvas, ctx, 12, secHandLength, 7);
+    radiate(canvas, ctx, 60, secHandLength, 30);
+
+    const seconds = date.getSeconds();
+    drawHand(canvas, ctx, seconds / 60, secHandLength, 1, 0.5); // Seconds
+
+    const minutes  = date.getMinutes();
+    drawHand(canvas, ctx, minutes / 60, secHandLength, 1.1, 0.6); // Seconds
+
+    const hour = date.getHours();
+    drawHand(canvas, ctx, ((hour * 5 + (minutes / 60) * 5) / 60), secHandLength, 1.5, 1.5); // Seconds
+}
+
+
 let localTimeStore;
 
 const tzDisplay = function (localTimeMoment, timeElement) {
@@ -99,6 +180,7 @@ const tzDisplay = function (localTimeMoment, timeElement) {
             });
     }
 
+    // And now the minus version
     {
         const buttonMinus = timeE.querySelector("button.mins-minus");
         buttonMinus.addEventListener("click", clickEvt => {
@@ -141,6 +223,11 @@ const tzDisplay = function (localTimeMoment, timeElement) {
 window.addEventListener("load", loadEvt => {
     localTimeStore = momentInstance(); // Initialize it
     const localTime = localTimeStore.get();
+
+    showClock();
+    showClock();
+    showClock();
+    
     document.querySelector("button[name='add']")
         .addEventListener("click", clickEvt => {
             // Let's add a clock
