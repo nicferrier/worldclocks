@@ -1,0 +1,30 @@
+body {
+    font-family: sans-serif;
+}
+
+.clock {
+    margin-top: 1em;
+    width: 40em;
+    border: solid 1px;
+    display: flex;
+    padding: 4px;
+}
+
+.location, .date, .time, .tz {
+    width: 20em;
+    margin-left: 5px;
+}
+
+.time > .hours:after {
+    content: ":";
+}
+
+.timepart {
+    border: solid 1px;
+    padding: 1px;
+    width: 40px;
+}
+
+.timepart:focus {
+    border: solid 1px red;
+}
