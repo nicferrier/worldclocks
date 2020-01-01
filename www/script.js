@@ -32,8 +32,10 @@ const momentInstance = function () {
     };
 };
 
+let localTimeStore;
 
-// Circle drawing stuff
+// Circle drawing stuff - all credit to: https://www.encodedna.com/html5/canvas/simple-analog-clock-using-canvas-javascript.htm
+
 const circle = function (canvas, ctx, radius) {
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
@@ -88,8 +90,7 @@ const showClock = function () {
     canvas.height = 200;
     const ctx = canvas.getContext('2d');
 
-    const date = new Date;
-    let angle;
+    const date = localTimeStore.get();
     const secHandLength = 60;
 
     // CLEAR EVERYTHING ON THE CANVAS. RE-DRAW NEW ELEMENTS EVERY SECOND.
@@ -102,18 +103,15 @@ const showClock = function () {
     radiate(canvas, ctx, 12, secHandLength, 7);
     radiate(canvas, ctx, 60, secHandLength, 30);
 
-    const seconds = date.getSeconds();
+    const seconds = date.seconds();
     drawHand(canvas, ctx, seconds / 60, secHandLength, 1, 0.5); // Seconds
 
-    const minutes  = date.getMinutes();
+    const minutes  = date.minutes();
     drawHand(canvas, ctx, minutes / 60, secHandLength, 1.1, 0.6); // Seconds
 
-    const hour = date.getHours();
+    const hour = date.hours();
     drawHand(canvas, ctx, ((hour * 5 + (minutes / 60) * 5) / 60), secHandLength, 1.5, 1.5); // Seconds
 }
-
-
-let localTimeStore;
 
 const tzDisplay = function (localTimeMoment, timeElement) {
     const tz = timeElement.getAttribute("data-tz");
@@ -127,13 +125,6 @@ const tzDisplay = function (localTimeMoment, timeElement) {
     locE.classList.add("location");
     timeElement.appendChild(locE);
     locE.textContent = tzName;
-
-    /*
-    const dateE = document.createElement("span");
-    dateE.classList.add("date"),
-    timeElement.appendChild(dateE);
-    dateE.textContent = dateString;
-    */
 
     const timeE = document.createElement("span");
     timeE.classList.add("time");
