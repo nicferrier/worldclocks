@@ -81,16 +81,15 @@ const drawHand = function (canvas, ctx, val, length, lengthDivider, handWidth) {
     ctx.stroke();
 }
 
-const showClock = function () {
+const showClock = function (date, parentNode) {
     // DEFINE CANVAS AND ITS CONTEXT.
     // var canvas = document.getElementById('canvas');
     const canvas = document.createElement("canvas");
-    document.querySelector(".clockpic").appendChild(canvas);
+    parentNode.appendChild(canvas);
     canvas.width = 200;
-    canvas.height = 200;
+    canvas.height = 150;
     const ctx = canvas.getContext('2d');
 
-    const date = localTimeStore.get();
     const secHandLength = 60;
 
     // CLEAR EVERYTHING ON THE CANVAS. RE-DRAW NEW ELEMENTS EVERY SECOND.
@@ -117,6 +116,8 @@ const tzDisplay = function (localTimeMoment, timeElement) {
     const tz = timeElement.getAttribute("data-tz");
     const tzName = timeElement.getAttribute("data-tzname");
     const localTime = localTimeMoment.tz(tz);
+
+    showClock(localTime, timeElement);
     
     const dateString = localTime.format("ll");
     const timeString = localTime.format("LTS");
@@ -124,7 +125,7 @@ const tzDisplay = function (localTimeMoment, timeElement) {
     const locE = document.createElement("span");
     locE.classList.add("location");
     timeElement.appendChild(locE);
-    locE.textContent = tzName;
+    locE.textContent = tzName + " " + localTime.format("z");
 
     const timeE = document.createElement("span");
     timeE.classList.add("time");
@@ -148,10 +149,8 @@ const tzDisplay = function (localTimeMoment, timeElement) {
 
             const zones = document.querySelector(".zones");
             Array.from(zones.children).forEach(zoneChild => {
-                if (zoneChild.getAttribute("data-tz") !== tz) {
-                    zoneChild.innerHTML = "";
-                    tzDisplay(now, zoneChild);
-                }
+                zoneChild.innerHTML = "";
+                tzDisplay(now, zoneChild);
             });
         });
 
@@ -163,10 +162,8 @@ const tzDisplay = function (localTimeMoment, timeElement) {
                 
                 const zones = document.querySelector(".zones");
                 Array.from(zones.children).forEach(zoneChild => {
-                    if (zoneChild.getAttribute("data-tz") !== tz) {
-                        zoneChild.innerHTML = "";
-                        tzDisplay(now, zoneChild);
-                    }
+                    zoneChild.innerHTML = "";
+                    tzDisplay(now, zoneChild);
                 });
             });
     }
@@ -181,10 +178,8 @@ const tzDisplay = function (localTimeMoment, timeElement) {
             
             const zones = document.querySelector(".zones");
             Array.from(zones.children).forEach(zoneChild => {
-                if (zoneChild.getAttribute("data-tz") !== tz) {
-                    zoneChild.innerHTML = "";
-                    tzDisplay(now, zoneChild);
-                }
+                zoneChild.innerHTML = "";
+                tzDisplay(now, zoneChild);
             });
         });
         
@@ -196,18 +191,11 @@ const tzDisplay = function (localTimeMoment, timeElement) {
                 
                 const zones = document.querySelector(".zones");
                 Array.from(zones.children).forEach(zoneChild => {
-                    if (zoneChild.getAttribute("data-tz") !== tz) {
-                        zoneChild.innerHTML = "";
-                        tzDisplay(now, zoneChild);
-                    }
+                    zoneChild.innerHTML = "";
+                    tzDisplay(now, zoneChild);
                 });
             });
     }
-
-    const tzE = document.createElement("span");
-    timeE.classList.add("tz");
-    timeElement.appendChild(tzE);
-    tzE.textContent = localTime.format("z");
 };
 
 
@@ -215,10 +203,6 @@ window.addEventListener("load", loadEvt => {
     localTimeStore = momentInstance(); // Initialize it
     const localTime = localTimeStore.get();
 
-    showClock();
-    showClock();
-    showClock();
-    
     document.querySelector("button[name='add']")
         .addEventListener("click", clickEvt => {
             // Let's add a clock

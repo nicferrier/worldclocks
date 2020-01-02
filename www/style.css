@@ -2,27 +2,28 @@ body {
     font-family: sans-serif;
 }
 
+.zones {
+    display: flex;
+    flex-direction: row;
+}
+
 .clock {
     margin-top: 1em;
-    width: 40em;
-    border: solid 1px;
+    width: 200px;
+    /*border: solid 1px;*/
     display: flex;
+    flex-direction: column;
     padding: 4px;
 }
 
-.location, .date, .time, .tz {
-    width: 20em;
-    margin-left: 5px;
-}
-
-.time > .hours:after {
-    content: ":";
+.location, .time {
+    display: flex;
+    align-self: center;
 }
 
 .timepart {
     border: solid 1px;
     padding: 1px;
-    width: 40px;
 }
 
 .timepart:focus {
