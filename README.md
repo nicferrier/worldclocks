@@ -2,7 +2,7 @@
 
 This is a small webapp that helps you deal with timezones.
 
-![world clock](worldclock.jpg)
+![world clock](worldtime.jpg)
 
 To run it you have to:
 
