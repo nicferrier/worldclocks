@@ -117,6 +117,20 @@ const tzDisplay = function (localTimeMoment, timeElement) {
     const tzName = timeElement.getAttribute("data-tzname");
     const localTime = localTimeMoment.tz(tz);
 
+    const closeButton = timeElement.appendChild(document.createElement("button"));
+    closeButton.textContent = "X";
+    closeButton.classList.add("close");
+    closeButton.addEventListener("click", clickEvt => {
+        const clockToRemove = clickEvt.target.parentElement;
+        clockToRemove.parentElement.removeChild(clockToRemove);
+
+        // Set the cookie to whatever we have
+        const zonesContainer = document.querySelector(".zones");
+        const zonesList = Array.from(zonesContainer.querySelectorAll(".clock"))
+              .map(clock => clock.getAttribute("data-tz"));
+        document.cookie = "worldclock=" + zonesList.join(",");
+    });
+
     showClock(localTime, timeElement);
     
     const dateString = localTime.format("ll");
@@ -203,34 +217,49 @@ window.addEventListener("load", loadEvt => {
     localTimeStore = momentInstance(); // Initialize it
     const localTime = localTimeStore.get();
 
-    const timezoneMap = {
+    // Use the moment data to create a map of options
+    const predefinedTimezoneMap = {
         "GMT": "London",
         "EST": "Toronto",
         "Asia/Chongqing": "Guangzhou",
         "Asia/Kolkata": "Pune"
     };
 
+    const tzNames = moment.tz.names();
+    const timezoneMap = Object.assign(
+        predefinedTimezoneMap,
+        tzNames.reduce((a,o) => {
+            a[o] = o;
+            return a;
+        }, {})
+    );
+
+
+    // Make a clock for each element in the cookie
     const zonesContainer = document.querySelector(".zones");
     
     const clocks = new URLSearchParams(document.cookie).get("worldclock");
-    clocks.split(",").forEach(tz => {
-        const timeElement = zonesContainer.appendChild(document.createElement("div"));
-        timeElement.classList.add("clock");
-        const tzName = timezoneMap[tz];
-        timeElement.setAttribute("data-tz", tz);
-        timeElement.setAttribute("data-tzname", tzName);
-        tzDisplay(localTime, timeElement);
-    });
+    if (clocks !== undefined && clocks !== null && clocks !== "") {
+        clocks.split(",").forEach(tz => {
+            const timeElement = zonesContainer.appendChild(document.createElement("div"));
+            timeElement.classList.add("clock");
+            const tzName = timezoneMap[tz];
+            timeElement.setAttribute("data-tz", tz);
+            timeElement.setAttribute("data-tzname", tzName);
+            tzDisplay(localTime, timeElement);
+        });
+    }
 
+    // What happens when we add?
     document.querySelector("button[name='add']")
         .addEventListener("click", clickEvt => {
             // Let's add a clock
-            const tzChoice = document.querySelector("select");
-            const tz = tzChoice.selectedOptions[0].value;
+            const tzChoice = document.querySelector("input[name='timezone']");
+            const tz = tzChoice.value;
 
             const timeElement = zonesContainer.appendChild(document.createElement("div"));
             timeElement.classList.add("clock");
-            const tzName = tzChoice.selectedOptions[0].textContent;
+            const tzName = timezoneMap[tz];
             timeElement.setAttribute("data-tz", tz);
             timeElement.setAttribute("data-tzname", tzName);
             tzDisplay(localTime, timeElement);
@@ -240,6 +269,13 @@ window.addEventListener("load", loadEvt => {
                   .map(clock => clock.getAttribute("data-tz"));
             document.cookie = "worldclock=" + zonesList.join(",");
         });
+
+    const dataList = document.querySelector("#timezones");
+    moment.tz.names().forEach(tzName => {
+        const option = dataList.appendChild(document.createElement("option"));
+        option.setAttribute("value", tzName);
+        option.textContent = tzName;
+    });
 });
 
 // End

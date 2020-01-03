@@ -5,15 +5,27 @@ body {
 .zones {
     display: flex;
     flex-direction: row;
+    width: 100%;
+    flex-wrap: wrap;
 }
 
 .clock {
     margin-top: 1em;
+    margin-left: 5px;
     width: 200px;
-    /*border: solid 1px;*/
+    border: solid 1px #e0e0e0;
     display: flex;
     flex-direction: column;
-    padding: 4px;
+    padding: 1px;
+    padding-bottom: 4px;
+}
+
+button.close {
+    width: 27px;
+    text-align: center;
+    display: flex;
+    align-self: end;
+    margin: 0px;
 }
 
 .location, .time {
@@ -28,4 +40,8 @@ body {
 
 .timepart:focus {
     border: solid 1px red;
+}
+
+input[name="timezone"] {
+    width: 20em;
 }

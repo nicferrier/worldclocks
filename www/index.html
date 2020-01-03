@@ -7,12 +7,11 @@
   </head>
   <body>
     <div class="clockpic"></div>
-    <select name="timezone">
-      <option value="GMT">London</option>
-      <option value="EST">Toronto</option>
-      <option value="Asia/Chongqing">Guangzhou</option>
-      <option value="Asia/Kolkata">Pune</option>
-    </select>
+    <input list="timezones" id="timezone" name="timezone"
+           placeholder="select a timezone by typing it's name"
+           width="60">
+    <datalist id="timezones">
+    </datalist>
     <button name="add">+</button>
     <div class="zones">
     </div>
