@@ -203,19 +203,42 @@ window.addEventListener("load", loadEvt => {
     localTimeStore = momentInstance(); // Initialize it
     const localTime = localTimeStore.get();
 
+    const timezoneMap = {
+        "GMT": "London",
+        "EST": "Toronto",
+        "Asia/Chongqing": "Guangzhou",
+        "Asia/Kolkata": "Pune"
+    };
+
+    const zonesContainer = document.querySelector(".zones");
+    
+    const clocks = new URLSearchParams(document.cookie).get("worldclock");
+    clocks.split(",").forEach(tz => {
+        const timeElement = zonesContainer.appendChild(document.createElement("div"));
+        timeElement.classList.add("clock");
+        const tzName = timezoneMap[tz];
+        timeElement.setAttribute("data-tz", tz);
+        timeElement.setAttribute("data-tzname", tzName);
+        tzDisplay(localTime, timeElement);
+    });
+
     document.querySelector("button[name='add']")
         .addEventListener("click", clickEvt => {
             // Let's add a clock
             const tzChoice = document.querySelector("select");
             const tz = tzChoice.selectedOptions[0].value;
 
-            const zonesContainer = document.querySelector(".zones");
             const timeElement = zonesContainer.appendChild(document.createElement("div"));
             timeElement.classList.add("clock");
             const tzName = tzChoice.selectedOptions[0].textContent;
             timeElement.setAttribute("data-tz", tz);
             timeElement.setAttribute("data-tzname", tzName);
             tzDisplay(localTime, timeElement);
+
+            // Set the cookie to whatever we have
+            const zonesList = Array.from(zonesContainer.querySelectorAll(".clock"))
+                  .map(clock => clock.getAttribute("data-tz"));
+            document.cookie = "worldclock=" + zonesList.join(",");
         });
 });
 

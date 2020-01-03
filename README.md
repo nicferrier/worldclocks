@@ -13,3 +13,7 @@ node server.js
 
 and then hit the server.
 
+## Persistence of display
+
+The persistence is achieved through a cookie: `worldclock`
+
