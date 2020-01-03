@@ -2,6 +2,17 @@ const express = require("express");
 
 const app = express();
 
-app.use(express.static("www"));
+app.use("/worldclock", express.static("www"));
 
-app.listen(8080);
+const boot = function () {
+    let port = process.env["APP_PORT"] || 8080;
+    const listener = app.listen(port, _ => {
+        console.log("listening on", listener.address().port);
+    });
+}
+
+if (require.main === module) {
+    boot();
+}
+
+// End
